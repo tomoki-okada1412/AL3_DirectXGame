@@ -24,23 +24,37 @@ void GameScene::Initialize() {
 	debugText_ = DebugText::GetInstance();
 	
 	//ファイル名を指定してテクスチャを読み込む(2D画像)
-	textureHandle2D_ = TextureManager::Load("mario.jpg");
+	//textureHandle2D_ = TextureManager::Load("mario.jpg");
 	textureHandle3D_ = TextureManager::Load("mario.jpg");
 	//サウンドデータの読み込み
-	soundDataHandle_ = audio_->LoadWave("se_sad03.wav");
+	//soundDataHandle_ = audio_->LoadWave("se_sad03.wav");
 
 	//音声再生
 	//audio_->PlayWave(soundDataHandle_);
 	//音声再生(ループ)
-	audio_->PlayWave(soundDataHandle_,true);
+	//audio_->PlayWave(soundDataHandle_,true);
 	//音量調整
-	audio_->SetVolume(soundDataHandle_, 0.01f);
+	//audio_->SetVolume(soundDataHandle_, 0.01f);
 
 	//  生成(2D画像)
 	sprite_ = Sprite::Create(textureHandle2D_, {100,50});
 
 	//3Dモデルの生成
 	model_ = Model::Create();
+
+	//X, Y, Z方向のスケーリングを設定
+	worldTransform_.scale_ = {5.0f, 5.0f, 5.0f};
+
+	//X, Y, Z軸周りの回転角を設定
+	worldTransform_.rotation_ = {XM_PI / 4.0f, XM_PI / 4.0f, 0.0f};
+	//XM_PIはπのことで180°になる。単位はラジアン
+	//XMConvertToRadiansを使用することで度数法に変換可能
+
+	//X, Y, Z軸周りの平行移動を設定
+	worldTransform_.translation_ = {10.0f, 10.0f, 10.0f};
+
+	//ワールドトランスフォームの初期化
+	worldTransform_.Initialize();
 }
 
 void GameScene::Update() {
@@ -53,18 +67,32 @@ void GameScene::Update() {
 	//移動した座標をスプライトに反映
 	sprite_->SetPosition(position);
 
-	//スペースキーを推した瞬間
+	//スペースキーを押した瞬間
 	if (input_->TriggerKey(DIK_SPACE)) {
 		//音声を止めます
 		audio_->StopWave(voiceHandle_);
 	}
 	//変数の値をインクリメント
-	value_++;
+	//value_++;
 	//値を含んだ文字列
-	std::string strDebug = std::string("value:") + 
-	std::to_string(value_);
+	//std::string strDebug = std::string("translation:") + 
+	//std::to_string();
 	//デバッグテキストを表示
-	debugText_->Print(strDebug, 50, 50, 1.0f);
+	//debugText_->Print(strDebug, 50, 50, 1.0f);
+	debugText_->SetPos(50, 50);
+	debugText_->Printf(
+	  "translation:(%f,%f,%f)", worldTransform_.translation_.x, worldTransform_.translation_.y,
+	  worldTransform_.translation_.z);
+	
+	debugText_->SetPos(50, 70);
+	debugText_->Printf(
+	  "rotation:(%f,%f,%f)", worldTransform_.rotation_.x, worldTransform_.rotation_.y,
+	  worldTransform_.rotation_.z);
+
+	debugText_->SetPos(50, 90);
+	debugText_->Printf(
+	  "scale:(%f,%f,%f)", worldTransform_.scale_.x, worldTransform_.scale_.y,
+	  worldTransform_.scale_.z);
 }
 
 void GameScene::Draw() {
@@ -79,7 +107,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
-	//sprite_->Draw(); ←ここに書くと、2Dモデルが奥に表示される
+	//sprite_->Draw(); 
+	//↑ここに書くと、2Dモデルが奥に表示される
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
